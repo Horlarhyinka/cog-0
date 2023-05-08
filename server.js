@@ -12,11 +12,24 @@ import xss from 'xss-clean';
 import mongoSanitize from 'express-mongo-sanitize';
 import logger from 'morgan';
 import bodyParser from 'body-parser';
+import cookieParser from 'cookie-parser'
 import pug from 'pug';
 import connectDB from "./config/db.js";
 
 dotenv.config();
 const app = express();
+
+app.use(express.json())
+app.use(helmet());
+app.use(cors());
+app.use(xss());
+app.use(mongoSanitize());
+
+
+app.use(express.json());
+app.use(cookieParser(process.env.JWT_SECRET));
+app.use(bodyParser.json());
+
 
 const PORT = Number(process.env.PORT)
 
