@@ -3,18 +3,8 @@ import express from 'express';
 import dotenv from 'dotenv';
 import morgan from 'morgan';
 import 'express-async-errors';
-import { dirname } from 'path';
-import { fileURLToPath } from 'url';
 import mongoose from 'mongoose';
-import path from 'path';
-import helmet from 'helmet';
-import xss from 'xss-clean';
-import mongoSanitize from 'express-mongo-sanitize';
-import logger from 'morgan';
-import bodyParser from 'body-parser';
-import pug from 'pug';
 import connectDB from "./config/db.js";
-
 dotenv.config();
 const app = express();
 
@@ -38,6 +28,5 @@ app.listen(PORT,()=>{
   }catch(ex){
     console.log("server failed to start: ",ex)
   }
-
 }
 start()
