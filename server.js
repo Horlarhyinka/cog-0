@@ -16,8 +16,14 @@ import cookieParser from 'cookie-parser'
 import pug from 'pug';
 import connectDB from "./config/db.js";
 
+
 dotenv.config();
 const app = express();
+
+const {JWT_SECRET, NODE_ENV, PORT} = process.env;
+
+// routes import
+import authRouter from "./routes/auth.js";
 
 app.use(express.json())
 app.use(helmet());
@@ -27,26 +33,30 @@ app.use(mongoSanitize());
 
 
 app.use(express.json());
-app.use(cookieParser(process.env.JWT_SECRET));
+app.use(cookieParser(JWT_SECRET));
 app.use(bodyParser.json());
 
 
-const PORT = Number(process.env.PORT)
+// routes middleware
+app.use('/api/auth', authRouter);
+
+const port = Number(PORT)
 
 mongoose.set('strictQuery', true);
 
 
-if (process.env.NODE_ENV !== 'production') {
+if (NODE_ENV !== 'production') {
   app.use(morgan('dev'))
 }
+
 
 async function start(){
   try{
 
 await connectDB()
 console.log("connected to db")
-app.listen(PORT,()=>{
-  console.log(`server running ${process.env.NODE_ENV} mode on port ${PORT}`)
+app.listen(port,()=>{
+  console.log(`server running ${NODE_ENV} mode on port ${port}`)
 })
   }catch(ex){
     console.log("server failed to start: ",ex)
