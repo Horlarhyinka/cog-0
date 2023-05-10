@@ -1,11 +1,10 @@
-import User from "../models/users.js"
-import Token from "../models/token.js"
+import User from "../models/user.js"
 import bcrypt from "bcrypt"
 import dotenv from "dotenv"
 import { createJWT } from "../utils/jwt.js"
 import CustomError from "../errors/index.js"
 import { StatusCodes } from "http-status-codes"
-import User from "../models/users.js"
+import Token from "../models/token.js"
 
 dotenv.config();
 
