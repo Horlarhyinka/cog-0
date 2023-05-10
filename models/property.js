@@ -1,10 +1,6 @@
 import mongoose from "mongoose";
 
 const locationSChema = new mongoose.Schema({
-    country: {
-        type: String,
-        required: true
-    },
     state: {
         type: String,
         required: true,

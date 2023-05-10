@@ -1,0 +1,1 @@
+export const paginate = (item, page, size) =>item.slice(page * size, size + 1)
