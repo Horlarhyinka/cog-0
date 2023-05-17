@@ -9,6 +9,12 @@ export const sendResourceNotFound = (res, resource) =>{
     return res.status(404).json({message})
 }
 
-export const sendServerFailed = (req, action) =>{
+export const sendServerFailed = (res, action) =>{
     const message = `server failed ${!action?"":"to "+action}`
+    return res.status(500).json({message})
+}
+
+export const sendInvalidEntry = (res, field) =>{
+    const message = `invalid ${!field?"entry": field}`
+    return res.status(400).json({message})
 }

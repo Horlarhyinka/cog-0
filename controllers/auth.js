@@ -1,10 +1,11 @@
-import User from "../models/user.js"
+import User from "../models/user.js";
+import Admin from "../models/admin.js";
 import bcrypt from "bcrypt"
 import dotenv from "dotenv"
 import { createJWT } from "../utils/jwt.js"
 import CustomError from "../errors/index.js"
 import { StatusCodes } from "http-status-codes"
-import Token from "../models/token.js"
+import { sendInvalidEntry } from "../util/responseHandlers.js"
 
 dotenv.config();
 
@@ -12,28 +13,22 @@ const { SALT } = process.env;
 
 
 const sign_up = async (req, res, next) => {
-    const { email } = req.body;
     try {
-        const emailExisted = await User.findOne({ email })
-        
-        if(emailExisted) {
-            throw new CustomError.BadRequestError("Email already exists")
-        }
-        const new_user = new User({
-            username:req.body.username,
-            email: req.body.email,
-            password: req.body.password,
-            phoneNumber: req.body.phoneNumber
-        });
-
-        const token = createJWT(new_user);
-
-        const user = await new_user.save();
-
-        user.password = undefined
-
-        res.status(StatusCodes.CREATED).json({ user: user, token})
+        let user;
+            if(req.body.isAdmin){
+               user = await Admin.create({ ...req.body }) 
+            }else{
+                user = await User.create({ ...req.body })
+            }
+            const token = createJWT(user);
+            user.password = undefined
+            return res.status(StatusCodes.CREATED).json({ user, token})
     } catch (err) {
+        if(err.code == 11000)return res.status(409).json({message: "email is taken"})
+        if(err._message?.toLowerCase().includes("user validation failed")){
+        const errors = Object.keys(err.errors).map(key =>err.errors[key]?.properties?.message)
+        if(errors.length > 0)return res.status(400).json({message: errors.join("\n").replace(/path/ig, "")})
+        }
         next(err)
     }
 }
@@ -44,27 +39,21 @@ const login = async (req, res, next) => {
     try{
         const user = await User.findOne({ email })
         
-        if (!user) {
-            throw new CustomError.UnauthenticatedError("Please provide email and password");
-        }
+        if (!user) return sendInvalidEntry(res)
         // if login password doesn't match the original password .....
         const originalPassword = await user.comparePassword(password);
 
-        if (!originalPassword) {
-            throw new CustomError.UnauthenticatedError("Invalid Credentials");
-        }
+        if (!originalPassword)return sendInvalidEntry("Credentials");
         
         // accessToken
         const token = createJWT(user)
         const { isAdmin, ...info } = user._doc;  //Hide user password
-        
-        res.status(StatusCodes.OK).json({ data: info, token });
+        return res.status(StatusCodes.OK).json({ data: info, token });
 
     } catch(err) {
         next(err)
     }
 }
-
 
 const resetPasswordRequest = async (req, res, next) => {
     try {
