@@ -1,0 +1,38 @@
+import express from "express";
+import dotenv from "dotenv";
+import helmet from 'helmet';
+import xss from 'xss-clean';
+import mongoSanitize from 'express-mongo-sanitize';
+import bodyParser from 'body-parser';
+import cookieParser from 'cookie-parser';
+import cors from 'cors';
+import passport from 'passport';
+import session from 'express-session';
+import MongoStore from 'connect-mongo';
+
+dotenv.config()
+
+export default function(app){
+app.use(express.urlencoded({extended: true}))
+app.use(express.json())
+app.use(cors())
+app.use(express.json())
+app.use(helmet());
+app.use(cors());
+app.use(xss());
+app.use(mongoSanitize());
+app.use(express.json());
+app.use(cookieParser(process.env.SECRET));
+app.use(bodyParser.json());
+app.use(session({
+  secret: String(process.env.SECRET),
+  store: new MongoStore({
+    collectionName: "sessions",
+    mongoUrl: process.env.DB_URI
+  }),
+  saveUninitialized: true,
+  resave: false
+}))
+app.use(passport.session())
+app.use(passport.initialize())
+}

@@ -5,7 +5,8 @@ import dotenv from "dotenv"
 import { createJWT } from "../utils/jwt.js"
 import CustomError from "../errors/index.js"
 import { StatusCodes } from "http-status-codes"
-import { sendInvalidEntry } from "../util/responseHandlers.js"
+import { sendInvalidEntry, sendResourceNotFound } from "../util/responseHandlers.js"
+import catchAsync from "../util/catchAsync.js";
 
 dotenv.config();
 
@@ -133,10 +134,22 @@ const newPassword = async (req, res, next) => {
 
 }
 
+const oauthRedirect = catchAsync(async(req, res)=>{
+    const {user} = req
+    if(!user)return sendResourceNotFound(res, "user");
+    const token = createJWT(user)
+    user.password = undefined
+    const data = {user, token}
+    res.cookie("cog",data)
+    return res.status(200).json(data)
+})
+
+// User.deleteMany({}).then(res=>console.log("done deleting"))
 
 export {
     sign_up,
     login,
     resetPasswordRequest,
-    newPassword
+    newPassword,
+    oauthRedirect
 }
