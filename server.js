@@ -11,9 +11,9 @@ import xss from 'xss-clean';
 import mongoSanitize from 'express-mongo-sanitize';
 import bodyParser from 'body-parser';
 import cookieParser from 'cookie-parser'
-import connectDB from "./config/db.js";
-import propertyRoutes from "./routes/property.js"
-import authRouter from "./routes/auth.js";
+import connectDB from "./config/db.js"; 
+import useRouters from "./startup/routes.js"
+import * as test from "./middleware/authentication.js"
 
 dotenv.config();
 const app = express();
@@ -35,14 +35,8 @@ app.use(express.json());
 app.use(cookieParser(JWT_SECRET));
 app.use(bodyParser.json());
 // routes middleware
-app.use('/api/v1/auth', authRouter);
-app.use("/api/v1/properties", propertyRoutes)
-
-
-
+useRouters(app)
 mongoose.set('strictQuery', true);
-
-
 if (NODE_ENV !== 'production') {
   app.use(morgan('dev'))
 }

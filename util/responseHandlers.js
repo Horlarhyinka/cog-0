@@ -18,3 +18,5 @@ export const sendInvalidEntry = (res, field) =>{
     const message = `invalid ${!field?"entry": field}`
     return res.status(400).json({message})
 }
+
+export const sendUnauthenticated = (res) =>res.status(401).json({message: "UNAUTHENTICATED"})
