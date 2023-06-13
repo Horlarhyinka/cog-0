@@ -1,6 +1,10 @@
 import mongoose from "mongoose";
 
 const locationSChema = new mongoose.Schema({
+    country: {
+        type: String,
+        required:true
+    },
     state: {
         type: String,
         required: true,
@@ -9,6 +13,10 @@ const locationSChema = new mongoose.Schema({
         type: String,
         required: true
     },
+    landmark: {
+        type: String,
+        required:true
+    },
     zip: {
         type: String,
         required: true
@@ -16,12 +24,13 @@ const locationSChema = new mongoose.Schema({
 })
 
 const propertySchema = new mongoose.Schema({
-    type: {
-        type: String,
-        required: true
-    },
+    type: enum['Bungalow', 'Detatched', 'Semi-detatched',''],
     location:{
         type: locationSChema
+    },
+    address: {
+        type: String,
+        required: true
     },
     price: {
         type: Number,
@@ -31,6 +40,14 @@ const propertySchema = new mongoose.Schema({
         type: [String],
         required: [true, "property image is required"],
         minlength: 1
+    },
+    available:{
+        required: false,
+        type: 'Boolean'
+    },
+    isFeatured: {
+    type: 'Boolean',
+     default: false
     }
 })
 
