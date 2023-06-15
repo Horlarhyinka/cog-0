@@ -31,15 +31,14 @@ const userSchema = new mongoose.Schema({
     discriminatorKey: "kind"
 })
 
-const { SALT } = process.env;
-
 userSchema.pre('save', async function (next) {
   let user = this
  
   if (user.isModified('password')) {
+    
+    const SALT = await bcrypt.genSalt(10)
    user.password = await bcrypt.hash(user.password, Number(SALT))
   }
- 
   next()
  })
 
@@ -48,3 +47,4 @@ userSchema.methods.comparePassword = function (plainText) {
 }
 
 export default mongoose.model("user", userSchema);
+
