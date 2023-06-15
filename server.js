@@ -1,26 +1,23 @@
-import cors from 'cors';
+
+import 'express-async-errors';
 import express from 'express';
 import dotenv from 'dotenv';
 import morgan from 'morgan';
-import 'express-async-errors';
 import mongoose from 'mongoose';
-import connectDB from "./config/db.js";
-import propertyRoutes from "./routes/property.js"
+import connectDB from "./config/db.js"; 
+import useRouters from "./startup/routes.js"
+import useMiddlewares from "./startup/middlewares.js";
+
 dotenv.config();
 const app = express();
 
-const PORT = Number(process.env.PORT)
-
-app.use(express.urlencoded({extended: true}))
-app.use(express.json())
-app.use(cors())
-
-app.use("/api/v1/properties", propertyRoutes)
-
+const {JWT_SECRET, NODE_ENV, PORT} = process.env;
+const port = Number(process.env.PORT)
+useMiddlewares(app)
+// routes middleware
+useRouters(app)
 mongoose.set('strictQuery', true);
-
-
-if (process.env.NODE_ENV !== 'production') {
+if (NODE_ENV !== 'production') {
   app.use(morgan('dev'))
 }
 
@@ -29,8 +26,8 @@ async function start(){
 
 await connectDB()
 console.log("connected to db")
-app.listen(PORT,()=>{
-  console.log(`server running ${process.env.NODE_ENV} mode on port ${PORT}`)
+app.listen(port,()=>{
+  console.log(`server running ${process.env.NODE_ENV} mode on port ${port}`)
 })
   }catch(ex){
     console.log("server failed to start: >>>",ex)

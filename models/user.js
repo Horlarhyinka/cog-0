@@ -1,5 +1,7 @@
 import mongoose from "mongoose";
-import { emailRegex } from "../util/regex";
+import { emailRegex } from "../util/regex.js";
+import _ from 'lodash'
+import bcrypt from "bcrypt";
 
 const userSchema = new mongoose.Schema({
     email: {
@@ -13,11 +15,36 @@ const userSchema = new mongoose.Schema({
         required: true,
         minlength: 6
     },
+    firstName:{
+        type: String
+    },
+    lastName:{
+        type: String
+    },
     tel: {
-        type: string
+        type: String
+    },
+    address: {
+        type: String
     }
 },{
     discriminatorKey: "kind"
 })
 
+userSchema.pre('save', async function (next) {
+  let user = this
+ 
+  if (user.isModified('password')) {
+    
+    const SALT = await bcrypt.genSalt(10)
+   user.password = await bcrypt.hash(user.password, Number(SALT))
+  }
+  next()
+ })
+
+userSchema.methods.comparePassword = function (plainText) {
+  return bcrypt.compare(plainText, this.password)
+}
+
 export default mongoose.model("user", userSchema);
+
