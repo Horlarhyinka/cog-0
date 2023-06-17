@@ -18,21 +18,3 @@ export const authenticateUser = async (req, res, next) => {
   next();
 };
 
-// export const authorize = (...roles) => {
-//   console.log(roles);
-//   return (req, res, next) => {
-//     console.log(req.user);
-
-//     if (!roles.includes(req.user.role)) {
-//       throw new CustomError.UnauthorizedError(
-//         'You do not have access to perform the operation!'
-//       );
-//     }
-//     next();
-//   };
-// };
-
-// module.exports = {
-//   authenticateUser,
-//   authorize
-// };

@@ -1,6 +1,5 @@
 import mongoose from "mongoose";
 import { emailRegex } from "../util/regex.js";
-import _ from 'lodash'
 import bcrypt from "bcrypt";
 
 const userSchema = new mongoose.Schema({
@@ -26,6 +25,12 @@ const userSchema = new mongoose.Schema({
     },
     address: {
         type: String
+    },
+    resetToken:{
+        type: String
+    },
+    tokenExpiresIn:{
+        type: Date
     }
 },{
     discriminatorKey: "kind"
@@ -33,9 +38,7 @@ const userSchema = new mongoose.Schema({
 
 userSchema.pre('save', async function (next) {
   let user = this
- 
-  if (user.isModified('password')) {
-    
+  if (user.isNew || user.isModified('password')) {
     const SALT = await bcrypt.genSalt(10)
    user.password = await bcrypt.hash(user.password, Number(SALT))
   }

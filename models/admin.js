@@ -1,9 +1,9 @@
 import mongoose from "mongoose";
 import user from "./user.js";
 import property from "./property.js";
-import { emailRegex } from "../util/regex.js";
+import { emailRegex, telRegex } from "../util/regex.js";
 
-const clientSchema = {
+const clientSchema = new mongoose.Schema({
     firstName : {
         type: String,
         required: true
@@ -17,14 +17,19 @@ const clientSchema = {
         match: emailRegex
     },
     address:{
-        Type: String,
+        type: String,
         required: true
     },
     tel:{ 
         type: String,
-        require:true
+        require:true,
+        match: telRegex
     }
-}
+})
+
+clientSchema.pre("save",function(){
+    this.tel = this.tel?.replace(/[\-\s]/, "")
+})
 
 const dealSchema = {
     name: {
@@ -47,12 +52,11 @@ const dealSchema = {
         type: String
     },
     property: {
-        [mongoose.Schema.Types.ObjectId],
+        type: [mongoose.Schema.Types.ObjectId],
         ref: 'property'
     },
     client:{
-        [mongoose.Schema.Types.ObjectId],
-        ref: 'client'
+        type: [clientSchema]
     }
 }
 

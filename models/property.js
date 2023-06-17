@@ -26,7 +26,7 @@ const propertySchema = new mongoose.Schema({
     type: {
       type: String,
       required: true,
-      enum: ['Bungalow', 'BUNGALOW', 'bungalow', 'Detatched', 'DETATCHED', 'detatched', 'Semi-detatched', 'SEMI-DETACHED', 'OTHERS', 'Others', 'others;]
+      enum: ['Bungalow', 'BUNGALOW', 'bungalow', 'Detatched', 'DETATCHED', 'detatched', 'Semi-detatched', 'SEMI-DETACHED', 'OTHERS', 'Others', 'others']
     },
     location:{
         type: locationSChema
