@@ -6,4 +6,5 @@ router.post("/", property.createProperty)
 router.get("/", property.getProperties)
 router.get("/:id", property.getProperty)
 
+
 export default router

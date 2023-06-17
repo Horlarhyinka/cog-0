@@ -47,11 +47,11 @@ const dealSchema = {
         type: String
     },
     property: {
-        [mongoose.Schema.Types.ObjectId],
+        type: [mongoose.Schema.Types.ObjectId],
         ref: 'property'
     },
     client:{
-        [mongoose.Schema.Types.ObjectId],
+        type: [mongoose.Schema.Types.ObjectId],
         ref: 'client'
     }
 }
