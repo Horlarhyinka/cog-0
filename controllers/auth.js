@@ -12,9 +12,6 @@ import crypto from "crypto";
 
 dotenv.config();
 
-const { SALT } = process.env;
-
-
 const sign_up = async (req, res, next) => {
     try {
         let user;
@@ -62,7 +59,7 @@ const resetPasswordRequest = async (req, res, next) => {
         const user = await User.findOne({email})
         if (!user)return sendResourceNotFound(res, "user")
         let resetToken = crypto.randomBytes(32).toString("hex");
-        const link = `${req.get("host")}/resetPassword/?token=${resetToken}`;
+        const link = `${process.env.APP_UI_URL}/resetPassword/?token=${resetToken}`;
         user.resetToken = resetToken;
         user.tokenExpiresIn = new Date(Date.now() + 1000*60*60*2) //token expires in 2hrs
         await user.save()

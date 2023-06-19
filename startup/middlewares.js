@@ -12,7 +12,9 @@ import MongoStore from 'connect-mongo';
 dotenv.config()
 
 export default function(app){
-app.use(cors())
+app.use(cors({
+  origin: ["http://localhost:3000", process.env.APP_UI_URL]
+}))
 app.use(express.urlencoded({extended: true}))
 app.use(express.json())
 app.use(helmet());
