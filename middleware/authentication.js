@@ -4,7 +4,7 @@ import User from './../models/user.js'
 import jwt from 'jsonwebtoken'
 import { sendUnauthenticated } from '../util/responseHandlers.js';
 
-export const authenticateUser = async (req, res, next) => {
+export default async (req, res, next) => {
   let token;
   if (req.headers.authorization && req.headers.authorization.startsWith('Bearer')) {
     token = req.headers.authorization.split(' ')[1];

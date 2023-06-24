@@ -1,5 +1,5 @@
 import mongoose from "mongoose";
-import { emailRegex } from "../util/regex.js";
+import { emailRegex, telRegex } from "../util/regex.js";
 import bcrypt from "bcrypt";
 
 const userSchema = new mongoose.Schema({
@@ -21,7 +21,8 @@ const userSchema = new mongoose.Schema({
         type: String
     },
     tel: {
-        type: String
+        type: String,
+        match: telRegex
     },
     address: {
         type: String
@@ -31,6 +32,9 @@ const userSchema = new mongoose.Schema({
     },
     tokenExpiresIn:{
         type: Date
+    },
+    avatar:{
+        type: String
     }
 },{
     discriminatorKey: "kind"

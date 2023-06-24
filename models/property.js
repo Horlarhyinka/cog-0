@@ -18,11 +18,13 @@ const locationSChema = new mongoose.Schema({
     landmark: {
         type: String,
         required:true
+    },
+    zip: {
+        type: String
     }
 })
 
 const propertySchema = new mongoose.Schema({
-
     type: {
       type: String,
       required: true,
@@ -44,7 +46,7 @@ const propertySchema = new mongoose.Schema({
         required: [true, "property image is required"],
         minlength: 1
     },
-    available:{
+    available: {
         required: false,
         type: Boolean,
       default: true
@@ -53,6 +55,10 @@ const propertySchema = new mongoose.Schema({
     type: Boolean,
      default: false
     }
+})
+
+propertySchema.pre("save",async function(){
+    this.type = this.type.toUpperCase()
 })
 
 export default mongoose.model("property", propertySchema);
