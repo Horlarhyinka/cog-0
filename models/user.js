@@ -25,7 +25,8 @@ const userSchema = new mongoose.Schema({
         type: String
     },
     address: {
-        type: String
+        type: String,
+        required:true
     }
 },{
     discriminatorKey: "kind"
