@@ -1,10 +1,12 @@
 import mongoose from "mongoose";
 
 const locationSChema = new mongoose.Schema({
+
     country: {
         type: String,
-        required:true
+        default: "Nigeria"
     },
+
     state: {
         type: String,
         required: true,
@@ -18,13 +20,16 @@ const locationSChema = new mongoose.Schema({
         required:true
     },
     zip: {
-        type: String,
-        required: true
+        type: String
     }
 })
 
 const propertySchema = new mongoose.Schema({
-    type: enum['Bungalow', 'Detatched', 'Semi-detatched',''],
+    type: {
+      type: String,
+      required: true,
+      enum: ['Bungalow', 'BUNGALOW', 'bungalow', 'Detatched', 'DETATCHED', 'detatched', 'Semi-detatched', 'SEMI-DETACHED', 'OTHERS', 'Others', 'others']
+    },
     location:{
         type: locationSChema
     },
@@ -41,14 +46,19 @@ const propertySchema = new mongoose.Schema({
         required: [true, "property image is required"],
         minlength: 1
     },
-    available:{
+    available: {
         required: false,
-        type: 'Boolean'
+        type: Boolean,
+      default: true
     },
     isFeatured: {
-    type: 'Boolean',
+    type: Boolean,
      default: false
     }
+})
+
+propertySchema.pre("save",async function(){
+    this.type = this.type.toUpperCase()
 })
 
 export default mongoose.model("property", propertySchema);

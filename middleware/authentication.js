@@ -4,7 +4,7 @@ import User from './../models/user.js'
 import jwt from 'jsonwebtoken'
 import { sendUnauthenticated } from '../util/responseHandlers.js';
 
-export const authenticateUser = async (req, res, next) => {
+export default async (req, res, next) => {
   let token;
   if (req.headers.authorization && req.headers.authorization.startsWith('Bearer')) {
     token = req.headers.authorization.split(' ')[1];
@@ -18,21 +18,3 @@ export const authenticateUser = async (req, res, next) => {
   next();
 };
 
-// export const authorize = (...roles) => {
-//   console.log(roles);
-//   return (req, res, next) => {
-//     console.log(req.user);
-
-//     if (!roles.includes(req.user.role)) {
-//       throw new CustomError.UnauthorizedError(
-//         'You do not have access to perform the operation!'
-//       );
-//     }
-//     next();
-//   };
-// };
-
-// module.exports = {
-//   authenticateUser,
-//   authorize
-// };

@@ -1,6 +1,5 @@
 import mongoose from "mongoose";
-import { emailRegex } from "../util/regex.js";
-import _ from 'lodash'
+import { emailRegex, telRegex } from "../util/regex.js";
 import bcrypt from "bcrypt";
 
 const userSchema = new mongoose.Schema({
@@ -22,25 +21,22 @@ const userSchema = new mongoose.Schema({
         type: String
     },
     tel: {
-        type: String
+        type: String,
+        match: telRegex
     },
     address: {
-        type: String,
-        required:true
+        type: String
     }
 },{
     discriminatorKey: "kind"
 })
 
-const { SALT } = process.env;
-
 userSchema.pre('save', async function (next) {
   let user = this
- 
-  if (user.isModified('password')) {
+  if (user.isNew || user.isModified('password')) {
+    const SALT = await bcrypt.genSalt(10)
    user.password = await bcrypt.hash(user.password, Number(SALT))
   }
- 
   next()
  })
 
@@ -49,3 +45,4 @@ userSchema.methods.comparePassword = function (plainText) {
 }
 
 export default mongoose.model("user", userSchema);
+

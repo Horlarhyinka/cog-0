@@ -20,3 +20,4 @@ export const sendInvalidEntry = (res, field) =>{
 }
 
 export const sendUnauthenticated = (res) =>res.status(401).json({message: "UNAUTHENTICATED"})
+

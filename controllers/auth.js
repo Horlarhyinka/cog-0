@@ -2,16 +2,15 @@ import User from "../models/user.js";
 import Admin from "../models/admin.js";
 import bcrypt from "bcrypt"
 import dotenv from "dotenv"
-import { createJWT } from "../utils/jwt.js"
+import { createJWT } from "../util/jwt.js"
 import CustomError from "../errors/index.js"
 import { StatusCodes } from "http-status-codes"
-import { sendInvalidEntry, sendResourceNotFound } from "../util/responseHandlers.js"
+import { sendInvalidEntry, sendMissingDependency, sendResourceNotFound } from "../util/responseHandlers.js"
 import catchAsync from "../util/catchAsync.js";
+import Mailer from "../services/mailer.js";
+import crypto from "crypto";
 
 dotenv.config();
-
-const { SALT } = process.env;
-
 
 const sign_up = async (req, res, next) => {
     try {
@@ -37,99 +36,53 @@ const sign_up = async (req, res, next) => {
 // Login user
 const login = async (req, res, next) => {
     const { email, password } = req.body;
+    if(!email || !password)return sendMissingDependency(res, "email and password")
     try{
         const user = await User.findOne({ email })
-        
-        if (!user) return sendInvalidEntry(res)
+        if (!user) return sendResourceNotFound(res, "user")
         // if login password doesn't match the original password .....
-        const originalPassword = await user.comparePassword(password);
-
-        if (!originalPassword)return sendInvalidEntry("Credentials");
-        
+        const validatePassword = await user.comparePassword(password);
+        if (!validatePassword)return sendInvalidEntry(res, "Credentials");
         // accessToken
         const token = createJWT(user)
-        const { isAdmin, ...info } = user._doc;  //Hide user password
-        return res.status(StatusCodes.OK).json({ data: info, token });
-
+        user.password = undefined;
+        return res.status(StatusCodes.OK).json({ user, token });
     } catch(err) {
         next(err)
     }
 }
 
 const resetPasswordRequest = async (req, res, next) => {
+    const {email} = req.body;
+    if(!email)return sendMissingDependency(res, "email")
     try {
-        const user = await User.findOne({email: req.body.email})
-
-        if (!user) {
-            throw new CustomError.UnauthenticatedError({"message":"User email does not exist"})
-        }
-    
-        const token = await Token.findOne({ userId: user._id })
-        
-        if (token) {
-            await token.deleteOne()
-        }
-
+        const user = await User.findOne({email})
+        if (!user)return sendResourceNotFound(res, "user")
         let resetToken = crypto.randomBytes(32).toString("hex");
-        const hash = bcrypt.hashSync(resetToken, Number(SALT));
-
-        await new Token({
-            userId: user._id,
-            token: hash,
-            createdAt: Date.now(),
-        }).save()
-
-        const link = `${process.env.CLIENT_URL}/resetPassword/userId=${user._id}?token=${resetToken}`;
-        await sendEmail(user.email,"Password Reset",{  name: user.username, link: link,},"./template/requestResetPassword.handlebars");
-        res.status(StatusCodes.OK).json(link);
-
+        const link = `${process.env.APP_UI_URL}/resetPassword/?token=${resetToken}`;
+        user.resetToken = resetToken;
+        user.tokenExpiresIn = new Date(Date.now() + 1000*60*60*2) //token expires in 2hrs
+        await user.save()
+        const mailer = new Mailer(email)
+        await mailer.sendPasswordResetMail(link)
+        return res.status(StatusCodes.OK).json({message: "check "+ email + " to complete password reset process"});
     } catch (err) {
         next(err)
     }
 }
 
-
-const newPassword = async (req, res, next) => {
+const resetPassword = async (req, res, next) => {
     try {
-        const {password, token, userId} = req.body;
-        // const resetToken = req.params.token 
-
-        const passwordResetToken  = await Token.findOne({
-            userId
-        });
-
-        if (!passwordResetToken) throw new CustomError.BadRequestError("Invalid link or expired");
-
-        const isValid = bcrypt.compare(token, passwordResetToken.token);
-
-        if (!isValid) {
-            throw new CustomError.BadRequestError("Invalid or expired password reset token");
-        }
-      
-        const hash = await bcrypt.hash(password,  Number(SALT));
-      
-        await User.findByIdAndUpdate(
-            req.params.id,
-          { $set: { password: hash }},
-          { new: true }
-        );
-
-        const user = await User.findById({_id: userId})
-        if (!user) {
-            throw new CustomError.BadRequestError("invalid link or expired")
-        };
-
-        console.log(user)
-
-        sendEmail(user.email, "Password Reset Successfully",{ name: user.name },"./template/resetPassword.handlebars");
-
-        await passwordResetToken.delete();
-            
-        res.status(StatusCodes.OK).json({ message: "Password reset was successful" });
-            
+        const {password, confirmPassword} = req.body;
+        if(password !== confirmPassword)return res.status(400).json({message: "password and confirm password must be the same"})
+        const {token} = req.params
+        if(!token)return sendMissingDependency(res, "token")
+        const user = await User.findOneAndUpdate({resetToken: token, tokenExpiresIn: {$gte: new Date()}},{password}, {new: true})
+        if(!user)return sendResourceNotFound(res, "user")
+        user.password = undefined;
+        return res.status(200).json({user, token: createJWT(user)})
     } catch (error) {
-        next(error);
-        console.log(error)
+        throw error
     }
 
 }
@@ -150,6 +103,6 @@ export {
     sign_up,
     login,
     resetPasswordRequest,
-    newPassword,
+    resetPassword,
     oauthRedirect
 }
