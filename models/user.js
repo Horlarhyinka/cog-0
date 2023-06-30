@@ -1,5 +1,5 @@
 import mongoose from "mongoose";
-import { emailRegex, telRegex } from "../util/regex.js";
+import { emailRegex, telRegex, roleProps} from "../util/regex.js";
 import bcrypt from "bcrypt";
 
 const userSchema = new mongoose.Schema({
@@ -26,9 +26,17 @@ const userSchema = new mongoose.Schema({
     },
     address: {
         type: String
+    },
+    role: {
+      type: String,
+      enum:[
+            "user",
+            "admin",
+            "client",
+            "manager"
+        ],
+      default: 'user'
     }
-},{
-    discriminatorKey: "kind"
 })
 
 userSchema.pre('save', async function (next) {
