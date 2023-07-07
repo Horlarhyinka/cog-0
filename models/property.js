@@ -1,7 +1,7 @@
 import mongoose from "mongoose";
+import property_types from "../util/property_types.js";
 
 const locationSChema = new mongoose.Schema({
-
     country: {
         type: String,
         default: "Nigeria"
@@ -26,9 +26,9 @@ const locationSChema = new mongoose.Schema({
 
 const propertySchema = new mongoose.Schema({
     type: {
-      type: String,
-      required: true,
-      enum: ['Bungalow', 'BUNGALOW', 'bungalow', 'Detatched', 'DETATCHED', 'detatched', 'Semi-detatched', 'SEMI-DETACHED', 'OTHERS', 'Others', 'others']
+        type: String,
+        required: true,
+        enum: [...Object.values(property_types)]
     },
     location:{
         type: locationSChema
@@ -49,11 +49,11 @@ const propertySchema = new mongoose.Schema({
     available: {
         required: false,
         type: Boolean,
-      default: true
+        default: true
     },
     isFeatured: {
-    type: Boolean,
-     default: false
+        type: Boolean,
+        default: false
     }
 })
 

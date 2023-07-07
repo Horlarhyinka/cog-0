@@ -1,13 +1,11 @@
 import jwt from 'jsonwebtoken';
+import roles from "./roles.js"
 
 
-const createJWT = ({_id: id, kind}) => {
+const createJWT = ({_id: id, role}) => {
   const body = {id}
-  if(kind == "admin"){
-    body.isAdmin = true
-  }else{
-    body.isAdmin = false
-  }
+  if(!roles[role])return null
+  body.role = role
   const token = jwt.sign(body, process.env.JWT_SECRET, {
     expiresIn: process.env.JWT_EXPIRES_IN
   });
