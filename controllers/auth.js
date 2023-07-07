@@ -1,44 +1,46 @@
 import User from "../models/user.js";
-import Admin from "../models/admin.js";
-import bcrypt from "bcrypt"
+import Manager from "../models/manager.js";
 import dotenv from "dotenv"
 import { createJWT } from "../util/jwt.js"
-import CustomError from "../errors/index.js"
 import { StatusCodes } from "http-status-codes"
-import { sendInvalidEntry, sendMissingDependency, sendResourceNotFound } from "../util/responseHandlers.js"
+import { sendInvalidEntry, sendMissingDependency, sendResourceNotFound, sendServerFailed } from "../util/responseHandlers.js"
 import catchAsync from "../util/catchAsync.js";
 import Mailer from "../services/mailer.js";
 import crypto from "crypto";
+import getModelbyRole from "../util/getModelbyRole.js";
+import catchMongooseError from "../util/catchMongooseError.js";
 
 dotenv.config();
 
 const sign_up = async (req, res, next) => {
+    const role = (req.body.role || req.query.role || req.params.role)?.toUpperCase()
+    const data = {...req.body}
+    if(role){
+        data.role = role
+    }
+        const Model = getModelbyRole(role)
+        if(!Model)return sendInvalidEntry(res, "role type")
     try {
-        let user;
-            if(req.body.isAdmin){
-               user = await Admin.create({ ...req.body }) 
-            }else{
-                user = await User.create({ ...req.body })
-            }
-            const token = createJWT(user);
-            user.password = undefined
-            return res.status(StatusCodes.CREATED).json({ user, token})
+        const user = await Model.create(data)
+        const token = createJWT(user);
+        user.password = undefined
+        return res.status(StatusCodes.CREATED).json({ user, token})
     } catch (err) {
         if(err.code == 11000)return res.status(409).json({message: "email is taken"})
-        if(err._message?.toLowerCase().includes("user validation failed")){
-        const errors = Object.keys(err.errors).map(key =>err.errors[key]?.properties?.message)
-        if(errors.length > 0)return res.status(400).json({message: errors.join("\n").replace(/path/ig, "")})
+        const mongooseErrors = catchMongooseError(err)
+        if(mongooseErrors?.message)return res.status(400).json(mongooseErrors)
+        return sendServerFailed(res, "complete signup")
         }
-        next(err)
     }
-}
 
 // Login user
 const login = async (req, res, next) => {
     const { email, password } = req.body;
     if(!email || !password)return sendMissingDependency(res, "email and password")
+    const role = (req.query.role || req.body.role || req.params.role)?.toUpperCase()
+    const Model = getModelbyRole(role)
     try{
-        const user = await User.findOne({ email })
+        const user = await Model.findOne({ email })
         if (!user) return sendResourceNotFound(res, "user")
         // if login password doesn't match the original password .....
         const validatePassword = await user.comparePassword(password);
@@ -67,7 +69,9 @@ const resetPasswordRequest = async (req, res, next) => {
         await mailer.sendPasswordResetMail(link)
         return res.status(StatusCodes.OK).json({message: "check "+ email + " to complete password reset process"});
     } catch (err) {
-        next(err)
+        const mongooseErrors = catchMongooseError(err)
+        if(mongooseErrors?.message)return res.status(400).json(mongooseErrors)
+        return sendServerFailed(res, "reset password")
     }
 }
 
@@ -77,7 +81,9 @@ const resetPassword = async (req, res, next) => {
         if(password !== confirmPassword)return res.status(400).json({message: "password and confirm password must be the same"})
         const {token} = req.params
         if(!token)return sendMissingDependency(res, "token")
-        const user = await User.findOneAndUpdate({resetToken: token, tokenExpiresIn: {$gte: new Date()}},{password}, {new: true})
+        const role = req.query.role || req.body.role || req.params.role
+        const Model = getModelbyRole(role)
+        const user = await Model.findOneAndUpdate({resetToken: token, tokenExpiresIn: {$gte: new Date()}},{password}, {new: true})
         if(!user)return sendResourceNotFound(res, "user")
         user.password = undefined;
         return res.status(200).json({user, token: createJWT(user)})

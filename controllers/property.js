@@ -41,7 +41,7 @@ export const createProperty = catchAsync(async(req, res, next)=>{
     }catch(ex){
         const errMessages = handleMongooseErrors(ex)
         if(errMessages.message)return res.status(400).json(errMessages)
-            return sendServerFailed(res, "add property")
+        return sendServerFailed(res, "add property")
     }
 })
 
