@@ -13,7 +13,7 @@ import catchMongooseError from "../util/catchMongooseError.js";
 dotenv.config();
 
 const sign_up = async (req, res, next) => {
-    const role = (req.body.role || req.query.role || req.params.role)?.toUpperCase()
+    const role = ( req.query.role || req.body.role || req.params.role)?.toUpperCase()
     const data = {...req.body}
     if(role){
         data.role = role
@@ -25,7 +25,7 @@ const sign_up = async (req, res, next) => {
         const token = createJWT(user);
         user.password = undefined
         return res.status(StatusCodes.CREATED).json({ user, token})
-    } catch (err) {
+    } catch (err){
         if(err.code == 11000)return res.status(409).json({message: "email is taken"})
         const mongooseErrors = catchMongooseError(err)
         if(mongooseErrors?.message)return res.status(400).json(mongooseErrors)

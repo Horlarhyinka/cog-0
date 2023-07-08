@@ -1,6 +1,13 @@
-import { StatusCodes } from "http-status-codes";
+import { sendUnauthenticated } from "../util/responseHandlers.js";
+import roles from "../util/roles.js";
 
-export default (req, res, next) =>{
-    if(req.user?.kind !== "admin")return res.status(StatusCodes.UNAUTHORIZED).json({message: "UNAUTHORIZED"})
-    next()
+export default (role) =>{
+    return (req, res, next) =>{
+        const user = req.user;
+        if(!user)return sendUnauthenticated(res);
+        const userRole = user.role?.toUpperCase();
+        if(!userRole || !roles[userRole])return res.status(400).json({message:"invalid user role"});
+        if(userRole !== role?.toUpperCase())return res.status(403).json({message: "you are not cleared for this action"});
+        return next()
+    }
 }

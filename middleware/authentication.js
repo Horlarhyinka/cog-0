@@ -18,6 +18,7 @@ export default async (req, res, next) => {
   req.user = currentUser
   next();
   } catch (error) {
+    console.log(error)
     return sendUnauthenticated(res)
   }
 };
