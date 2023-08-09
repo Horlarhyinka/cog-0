@@ -44,11 +44,11 @@ const propertySchema = new mongoose.Schema({
     },
     images: {
         type: [String],
-        // required: [true, "property image is required"],
+        required: [true, "property image is required"],
         minlength: 1
     },
     available: {
-        // required: false,
+        required: false,
         type: Boolean,
         default: true
     },
