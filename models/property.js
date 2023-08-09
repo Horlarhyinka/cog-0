@@ -32,22 +32,23 @@ const propertySchema = new mongoose.Schema({
     },
     location:{
         type: locationSChema
-    },
+    }, 
     address: {
         type: String,
         required: true
     },
+    units: {type: [String]}, 
     price: {
         type: Number,
         required: true
     },
     images: {
         type: [String],
-        required: [true, "property image is required"],
+        // required: [true, "property image is required"],
         minlength: 1
     },
     available: {
-        required: false,
+        // required: false,
         type: Boolean,
         default: true
     },
