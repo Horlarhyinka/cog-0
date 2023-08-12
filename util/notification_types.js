@@ -1,5 +1,5 @@
 export default {
     ONBOARDING_NOTIFICATION: "onboard",
-    CONFIRM_APPLICATION: "confirm-application",
-    
+    APPLICATION_SENT: "application-sent",
+    NEW_PROSPECT: "new-prospect-notification"
 }

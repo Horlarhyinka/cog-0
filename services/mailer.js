@@ -39,7 +39,7 @@ class Mailer{
 
     sendPasswordResetMail = (url) => this.sendMail("password-reset", {url})
     sendNotification = (type, data) => this.sendMail(type, data)
-   
+    sendOnboardingMessage = (url) =>this.sendMail("onboard", { url })
 }
 
 export default Mailer;

@@ -9,6 +9,7 @@ import Mailer from "../services/mailer.js";
 import crypto from "crypto";
 import getModelbyRole from "../util/getModelbyRole.js";
 import catchMongooseError from "../util/catchMongooseError.js";
+import bcrypt from "bcrypt";
 
 dotenv.config();
 
@@ -24,6 +25,11 @@ const sign_up = async (req, res, next) => {
         const user = await Model.create(data)
         const token = createJWT(user);
         user.password = undefined
+        const mailer = new Mailer(user.email);
+        const verifyToken = await bcrypt.hash(String(user._id), 10)
+        user.token = verifyToken;
+        const onboardingUrl = `${ req.get("host")}/onboard/${verifyToken}` 
+        await mailer.sendOnboardingMessage(onboardingUrl)
         return res.status(StatusCodes.CREATED).json({ user, token})
     } catch (err){
         if(err.code == 11000)return res.status(409).json({message: "email is taken"})
