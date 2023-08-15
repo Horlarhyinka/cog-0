@@ -24,7 +24,8 @@ const UnitSchema = new mongoose.Schema({
     description: {
         type:String,
         required:true
-    }
+    },
+    propertyId:{ type: mongoose.Types.ObjectId, ref: 'property'},
 })
 
 
