@@ -1,8 +1,8 @@
 import mongoose from "mongoose";
 import "../util/roles.js";
 import User from "./user.js";
-// import property from "./property.js";
-import dealSchema from "./deal.js";
+import property from "./property.js";
+import deal from "./deal.js";
 import roles from "../util/roles.js";
 
 const managerSchema = new mongoose.Schema({
@@ -10,9 +10,10 @@ const managerSchema = new mongoose.Schema({
         type: [mongoose.Schema.Types.ObjectId],
         ref: "property"
     },
-    // deals: {
-    //     type: [dealSchema]
-    // },
+    deals: {
+        type: [mongoose.Schema.Types.ObjectId],
+        ref: "deal"
+    },
     role: {
         type: String,
         default: roles.MANAGER,

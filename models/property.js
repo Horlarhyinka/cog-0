@@ -55,7 +55,8 @@ const propertySchema = new mongoose.Schema({
     isFeatured: {
         type: Boolean,
         default: false
-    }
+    },
+    
 })
 
 propertySchema.pre("save",async function(){
