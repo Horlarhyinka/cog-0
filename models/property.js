@@ -32,11 +32,12 @@ const propertySchema = new mongoose.Schema({
     },
     location:{
         type: locationSChema
-    },
+    }, 
     address: {
         type: String,
         required: true
     },
+    units: {type: [String]}, 
     price: {
         type: Number,
         required: true

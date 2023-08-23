@@ -1,9 +1,7 @@
 import mongoose from "mongoose";
 import clientSchema from "./client.js";
-import statuses from "../util/statuses.js";
-import property from "./property.js";
 
-const dealSchema = new mongoose.Schema({
+const dealSchema = new mongoose.Schema( {
     client:{
         type: clientSchema,
         required: [true, "CLIENT INFO IS REQUIRED"]
