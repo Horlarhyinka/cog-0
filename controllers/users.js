@@ -1,4 +1,4 @@
-import User  from "../models/users.js";
+import User  from "../models/user.js";
 import catchAsync from "../util/catchAsync.js";
 import { trimUser } from "../util/funcs.js";
 import { sendMissingDependency, sendServerFailed } from "../util/responseHandlers.js";

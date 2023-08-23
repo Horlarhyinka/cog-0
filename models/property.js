@@ -56,6 +56,11 @@ const propertySchema = new mongoose.Schema({
         type: Boolean,
         default: false
     },
+    manager: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "manager",
+        required: true
+    }
     
 })
 

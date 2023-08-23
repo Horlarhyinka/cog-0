@@ -10,6 +10,7 @@ import crypto from "crypto";
 import getModelbyRole from "../util/getModelbyRole.js";
 import catchMongooseError from "../util/catchMongooseError.js";
 import bcrypt from "bcrypt";
+import mongoose, {ObjectId} from "mongoose";
 
 dotenv.config();
 
@@ -35,6 +36,7 @@ const sign_up = async (req, res, next) => {
         if(err.code == 11000)return res.status(409).json({message: "email is taken"})
         const mongooseErrors = catchMongooseError(err)
         if(mongooseErrors?.message)return res.status(400).json(mongooseErrors)
+        console.log(err)
         return sendServerFailed(res, "complete signup")
         }
     }
@@ -111,6 +113,7 @@ const oauthRedirect = catchAsync(async(req, res)=>{
 
 // User.deleteMany({}).then(res=>console.log("done deleting"))
 
+// console.log(new mongoose.Types.ObjectId('64e5c83429cb067be46d01ed'))
 export {
     sign_up,
     login,

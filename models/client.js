@@ -3,24 +3,21 @@ import { emailRegex, telRegex } from "../util/regex.js";
 
 const clientSchema = new mongoose.Schema({
     firstName : {
-        type: String,
-        required: true
+        type: String
     },
      lastName : {
-        type: String,
-        required: true
+        type: String
     },
     email: {
         type: String,
-        match: emailRegex
+        match: emailRegex,
+        required: true
     },
     address:{
-        type: String,
-        required: true
+        type: String
     },
     tel:{ 
         type: String,
-        require:true,
         match: telRegex
     }
 })
