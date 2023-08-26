@@ -3,6 +3,7 @@ import mongoose from "mongoose";
 import { emailRegex, telRegex } from "../util/regex.js";
 import bcrypt from "bcrypt";
 import roles from "../util/roles.js";
+import deal from "./deal.js";
 
 const userSchema = new mongoose.Schema({
     email: {
@@ -18,10 +19,12 @@ const userSchema = new mongoose.Schema({
         minlength: [6, "password of minimum of 6 characters is required"]
     },
     firstName:{
-        type: String
+        type: String,
+        minlength: 3
     },
     lastName:{
-        type: String
+        type: String,
+        minlength: 3
     },
     tel: {
         type: String,
@@ -29,6 +32,10 @@ const userSchema = new mongoose.Schema({
     },
     address: {
         type: String
+    },
+    deals: {
+      type: [mongoose.Schema.Types.ObjectId],
+      ref: "deal"
     },
     role: {
       type: String,

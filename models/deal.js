@@ -1,5 +1,6 @@
 import mongoose from "mongoose";
 import clientSchema from "./client.js";
+import statuses from "../util/statuses.js";
 
 const dealSchema = new mongoose.Schema( {
     client:{

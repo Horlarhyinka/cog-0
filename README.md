@@ -26,6 +26,7 @@ location:
 
         getTowns - /{state}/lgsa
         - state: name of the state you want to get the local governments
-        exanmple: curl "/api/v1/services/locations/lagos/lgas
+        exanmple: 
+        `curl "/api/v1/services/locations/lagos/lgas"`
             response: ["Agege","Ajeromi-Ifelodun","Alimosho","Amuwo-Odofin","Apapa","Badagary","Epe","Eti-Osa","Ibeju-Lekki", "Ifako-Ijaye","Ikeja","Ikorodu","Kosofe","Lagos Island","Lagos Mainland","Mushin","Ojo","Oshodi-Isolo","Somolu","Surulere"],
         

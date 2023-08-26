@@ -30,12 +30,15 @@ export const getProperty = catchAsync(async(req, res)=>{
 })
 
 export const createProperty = catchAsync(async(req, res, next)=>{
-    const {body: info} = req;
-    const validated = validatePropertyInfo(info)
-    console.log(validated)
+    const {body: data} = req;
+    const validated = validatePropertyInfo(data)
     if(validated.error)return res.status(400).json({message:validated.error.message})
     try{
-    const property = await Property.create(info)
+    const property = await Property.create({...data, manager: req.user._id})
+    //await update user
+    const user = req.user;
+    user.properties = [...user.properties, property._id]
+    await user.save()
     if(!property)return sendServerFailed(res, "create property")
     return res.status(201).json(property)
     }catch(ex){
@@ -125,3 +128,18 @@ export const updateLocation = catchAsync(async(req, res)=>{
     const updated = await property.save()
     return res.status(200).json(updated)
 })
+
+// Property.deleteMany({}).then(()=>console.log("done deleting"))
+
+/**
+ * {
+  "type": "BUNGALOW",
+  "location":{
+    "state": "Lagos",
+    "lga": "island",
+    "landmark": "epe"
+  },
+  "price":345000,
+  "address": "owo road, epe, Lagos Island"
+}
+ */
