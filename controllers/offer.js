@@ -3,7 +3,7 @@ import catchAsync from "../util/catchAsync.js";
 import Deal from "../models/deal.js";
 import * as responseHandlers from "../util/responseHandlers.js"
 import catchMongooseEx from "../util/catchMongooseError.js"
-import statuses from "../util/statuses.js";
+import statuses from "../util/stages.js";
 
 export const createOffer = catchAsync(async(req, res)=>{
     const {price, note, dealId, propertyId} = req.body
@@ -23,13 +23,22 @@ export const createOffer = catchAsync(async(req, res)=>{
             await user.save()
         }catch(ex){
             const errMessage = catchMongooseEx(ex)
-            if(errMessage.message)return responseHandlers.sendInvalidEntry(res, {message: errMessage.message})
+            if(errMessage.message)return res.status(400).json(errMessage)
             return responseHandlers.sendServerFailed(res, "create offer")
         }
 })
 
 export const deleteOffer = catchAsync(async(req, res)=>{
-    const {offerId} = req.params
+    const offerId = req.params.offerId
+    if(!offerId)return responseHandlers.sendMissingDependency(res, "offerId")
+    try{
+        await Offer.findByIdAndDelete(offerId)
+        return res.status(204).json({message: "successful"})
+    }catch(ex){
+        const errMessage = catchMongooseEx(ex)
+        if(errMessage.message)return res.status(400).json(errMessage)
+        return responseHandlers.sendServerFailed(res, "delete offer")
+    }
 })
 
 export const updateOffer = catchAsync(async(req, res)=>{
