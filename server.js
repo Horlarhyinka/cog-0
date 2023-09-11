@@ -21,15 +21,13 @@ if (NODE_ENV !== 'production') {
   app.use(morgan('dev'))
 }
 
-
-
 async function start(){
   try{
 
 await connectDB()
 console.log("connected to db")
 app.listen(port,()=>{
-  console.log(`server running ${process.env.NODE_ENV} mode on port ${port}`)
+  console.log(`server running ${process.env.NODE_ENV} mode on port ${port}...`)
 })
   }catch(ex){
     console.log("server failed to start: >>>",ex)

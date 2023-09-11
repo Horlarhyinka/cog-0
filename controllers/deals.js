@@ -12,7 +12,10 @@ import { validateClient } from "../util/validators.js";
 
 export const addProspect = catchAsync(async(req, res)=>{
     let client;
-    const clientId = req.params.clientId || req.body.clientId || req.query.clientId
+    let clientId = req.params.clientId || req.body.clientId || req.query.clientId
+    if(req.user.role = roles.CLIENT){
+        clientId = String(req.user._id)
+    }
     if(clientId){
         const clientDoc = await User.findById(clientId)
         if(!clientDoc)sendResourceNotFound(res, "client")
