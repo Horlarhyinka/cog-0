@@ -7,7 +7,7 @@ const offerSchema = new mongoose.Schema({
         required: true
     },
     note: {
-        type: Number,
+        type: String,
         required: false
     },
     property: {
@@ -20,6 +20,8 @@ const offerSchema = new mongoose.Schema({
         ref: "deal",
         required: false
     }
+},{
+    timestamps: true
 })
 
 export default mongoose.model("offer", offerSchema)

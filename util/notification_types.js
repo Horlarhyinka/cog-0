@@ -3,5 +3,7 @@
 export default {
     ONBOARDING_NOTIFICATION: "onboard",
     APPLICATION_SENT: "application-sent",
-    NEW_PROSPECT: "new-prospect-notification"
+    NEW_PROSPECT: "new-prospect-notification",
+    NEW_OFFER: "new-offer",
+    NEW_AGREEMENT: "new-agreement"
 }

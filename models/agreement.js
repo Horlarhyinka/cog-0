@@ -13,6 +13,11 @@ const agreementSchema = new mongoose.Schema({
     },
     payment: {
         type: paymentSchema
+    },
+    property:{
+        required: true,
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "property"
     }
 })
 

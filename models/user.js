@@ -4,6 +4,8 @@ import { emailRegex, telRegex } from "../util/regex.js";
 import bcrypt from "bcrypt";
 import roles from "../util/roles.js";
 import deal from "./deal.js";
+import offer from "./offer.js";
+import agreement from "./agreement.js";
 
 const userSchema = new mongoose.Schema({
     email: {
@@ -41,13 +43,22 @@ const userSchema = new mongoose.Schema({
       type: String,
       enum:[roles.CLIENT, roles.MANAGER],
       default: roles.CLIENT
+    },
+    offers:{
+      type: [mongoose.Schema.Types.ObjectId],
+      ref: "offer",
+      default: []
+    },
+    agreements:{
+      type: [mongoose.Schema.Types.ObjectId],
+      ref: "agreement",
+      default: []
     }
 })
 
 userSchema.pre('save', async function (next) {
   let user = this
   this.tel = this.tel?.replace(/[\-\s]/, "")
-//   this.role = this.role?.toUpperCase()
   if (user.isNew || user.isModified('password')) {
     const SALT = await bcrypt.genSalt(10)
    user.password = await bcrypt.hash(user.password, Number(SALT))
@@ -61,5 +72,6 @@ userSchema.methods.comparePassword = function (plainText) {
 const user = mongoose.model("user", userSchema);
 
 export default user
+
 
 // export default {}
