@@ -1,5 +1,5 @@
-import Mailer from "./mailer";
-import notification_types from "../util/notification_types";
+import Mailer from "./mailer.js";
+import notification_types from "../util/notification_types.js";
 
 export default class Notification{
     constructor(notificationType, email, Tel){
@@ -7,28 +7,30 @@ export default class Notification{
         this.services = [new Mailer(email),]
     }
     sendNotification = async(data) =>{
-        if(!checkNotificationData(type, data))return;
+        if(!checkNotificationData(this.notificationType, data))return false;
             let successCount = 0;
         try {
             await Promise.all(this.services.forEach(async(service)=>{
                 try {
-                    service.sendNotification(type, )
+                    service.sendNotification(this.notificationType, data)
+                    successCount++
                 } catch (error) {
-                    throw Error(error)
+                    console.log(error)
                 }
             }))
         } catch (ex) {
+            console.log({ex})
+        }
             if(successCount < 1){
                 return false;
             }
-            console.log(ex)
             return true
-        }
     }
 
 }
     function checkNotificationData(type, data) {
-        const status = true;
+        let status = false;
+
         switch(type){
             case notification_types.ONBOARDING_NOTIFICATION:
                 const { url } = data;
@@ -36,6 +38,20 @@ export default class Notification{
                     status = false;
                 }
                 break;
-            
+            case type === notification_types.NEW_OFFER:
+                if(!data.property.location.landmark){
+                    status = false;
+                }else{
+                    status =true
+                }
+                break;
+            case notification_types.NEW_AGREEMENT:
+                if(!data.property.location.landmark){
+                    status = false;
+                }else{
+                    status =true
+                }
+                break;
         }
+        return status
     }

@@ -1,0 +1,1 @@
+export default {PAID: "PAID", UNPAID: "UNPAID", PENDING: "PENDING"}

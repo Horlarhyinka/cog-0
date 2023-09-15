@@ -11,6 +11,8 @@ import getModelbyRole from "../util/getModelbyRole.js";
 import catchMongooseError from "../util/catchMongooseError.js";
 import bcrypt from "bcrypt";
 import mongoose, {ObjectId} from "mongoose";
+import Notification from "../services/notification.js";
+import notification_types from "../util/notification_types.js";
 
 dotenv.config();
 
@@ -30,7 +32,8 @@ const sign_up = async (req, res, next) => {
         const verifyToken = await bcrypt.hash(String(user._id), 10)
         user.token = verifyToken;
         const onboardingUrl = `${ req.get("host")}/onboard/${verifyToken}` 
-        await mailer.sendOnboardingMessage(onboardingUrl)
+        const notification = new Notification(notification_types.ONBOARDING_NOTIFICATION, user.email)
+        await notification.sendNotification({url: onboardingUrl})
         return res.status(StatusCodes.CREATED).json({ user, token})
     } catch (err){
         if(err.code == 11000)return res.status(409).json({message: "email is taken"})

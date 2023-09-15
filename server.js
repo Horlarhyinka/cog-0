@@ -8,6 +8,9 @@ import connectDB from "./config/db.js";
 import useRouters from "./startup/routes.js"
 import useMiddlewares from "./startup/middlewares.js";
 
+import Notification from "./services/notification.js";
+import notification_types from './util/notification_types.js';
+
 dotenv.config();
 const app = express();
 
@@ -21,16 +24,14 @@ if (NODE_ENV !== 'production') {
   app.use(morgan('dev'))
 }
 
-
-
 async function start(){
   try{
 
-await connectDB()
-console.log("connected to db")
-app.listen(port,()=>{
-  console.log(`server running ${process.env.NODE_ENV} mode on port ${port}`)
-})
+  await connectDB()
+  console.log("connected to db")
+  app.listen(port,()=>{
+    console.log(`server running ${process.env.NODE_ENV} mode on port ${port}...`)
+  })
   }catch(ex){
     console.log("server failed to start: >>>",ex)
   }

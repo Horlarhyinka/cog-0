@@ -6,7 +6,6 @@ import { sendUnauthenticated } from '../util/responseHandlers.js';
 export default async (req, res, next) => {
   let token;
   try {
-    
   if (req.headers.authorization && req.headers.authorization.startsWith('Bearer')) {
     token = req.headers.authorization.split(' ')[1];
   }
@@ -18,7 +17,6 @@ export default async (req, res, next) => {
   req.user = currentUser
   next();
   } catch (error) {
-    console.log(error)
     return sendUnauthenticated(res)
   }
 };

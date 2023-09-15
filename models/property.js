@@ -64,7 +64,7 @@ const propertySchema = new mongoose.Schema({
     
 })
 
-propertySchema.pre("save",async function(){
+propertySchema.pre('validate',async function(){
     this.type = this.type.toUpperCase()
 })
 

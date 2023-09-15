@@ -4,7 +4,9 @@ import authRouter from "../routes/auth.js";
 import unitRouter from "../routes/unit.js"
 import locationServiceRouter from "../routes/services/location.js"
 import dealsRouter from "../routes/deal.js";
-import userRouter from "../routes/user.js" 
+import userRouter from "../routes/user.js" ;
+import offerRouter from "../routes/offer.js";
+import agreementRouter from "../routes/agreement.js";
 
 export default (app) =>{
     app.use('/api/v1/auth', authRouter);
@@ -13,5 +15,7 @@ export default (app) =>{
     app.use("/api/v1/services/locations", locationServiceRouter)
     app.use("/api/v1/deals", dealsRouter)
     app.use("/api/v1/profile", userRouter)
+    app.use("/api/v1/offers", offerRouter)
+    app.use("/api/v1/agreements", agreementRouter)
     app.use((req, res)=>res.status(404).json({message: "route not found"}))
 }

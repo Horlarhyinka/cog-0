@@ -1,19 +1,22 @@
 import mongoose from "mongoose";
 import clientSchema from "./client.js";
-import statuses from "../util/statuses.js";
+import stages from "../util/stages.js";
+import "./offer.js";
+import "./agreement.js";
 
 const dealSchema = new mongoose.Schema( {
     client:{
         type: clientSchema,
         required: [true, "CLIENT INFO IS REQUIRED"]
     },
-    status: {
+    stage: {
         type: String,
-        enum: [...Object.values(statuses)],
-        default: statuses.PROSPECT
+        enum: [...Object.values(stages)],
+        default: stages.PROSPECT
     },
-    description:{
-        type: String
+    note:{
+        type: String,
+        default: null
     },
     property: {
         type: mongoose.Schema.Types.ObjectId,
@@ -21,11 +24,22 @@ const dealSchema = new mongoose.Schema( {
     },
     units:{
         //awaiting units api implementation
+    },
+    offer: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "offer",
+        default: null
+    },
+    agreement:{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "agreement",
+        default: null
+    },
+    isOnline: {
+        type: Boolean,
+        default: true
     }
 })
 
-dealSchema.pre("save",function(){
-    this.status = this.status.toUpperCase()
-})
 
 export default mongoose.model("deal", dealSchema)
