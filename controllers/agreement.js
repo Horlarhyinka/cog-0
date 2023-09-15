@@ -44,7 +44,7 @@ export const createAgreement = catchAsync(async(req, res)=>{
             deal.stage = stages.AGREEMENT
             await deal.save()
             }
-            const managerNotification = new Notification(notification_types.NEW_AGREEMENT, email)
+            const managerNotification = new Notification(notification_types.NEW_AGREEMENT, req.user.email)
             const clientNotification = new Notification(notification_types.NEW_AGREEMENT, client.email)
             await Promise.all([managerNotification.sendNotification({property}), 
                 clientNotification.sendNotification({property})])
