@@ -12,7 +12,7 @@
   <li><a href="#Documentation" >Documentation</a></li>
 </ul>
 <h1 id="Overview" >Project Overview</h1>
-<p>COG is an api which powers a real estate property management application. It is a node js application which uses mongodb database for data storage. The project includes the followin features.
+<p>COG is an api which powers a real estate property management application. It is a node js application which uses mongodb database for data storage. The project includes the following features.
   <ul>
     <li>Authentication: authentication endpoints ipmlemented with JWT and google oauth2.0</li>
     <li>Authorization: role based authorization for admin and client roles.</li>
